@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-struct NewRLQPController;
+struct HRP5PRLQPController;
 
 namespace rlqp
 {
@@ -33,7 +33,7 @@ namespace rlqp
  * - Convert policy outputs into q_rl targets.
  * - Manage policy gains and action scaling.
  *
- * NewRLQPController remains responsible for the mc_rtc lifecycle.
+ * HRP5PRLQPController remains responsible for the mc_rtc lifecycle.
  * RLPolicyRuntime owns everything that is policy-dependent.
  */
 class RLPolicyRuntime
@@ -42,20 +42,20 @@ public:
   RLPolicyRuntime();
 
   void configure(const mc_rtc::Configuration & controllerConfig,
-                 NewRLQPController & ctl,
+                 HRP5PRLQPController & ctl,
                  const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask);
 
-  void reset(NewRLQPController & ctl);
-  void runPolicyStepIfNeeded(NewRLQPController & ctl, double dt);
+  void reset(HRP5PRLQPController & ctl);
+  void runPolicyStepIfNeeded(HRP5PRLQPController & ctl, double dt);
 
-  void reloadCurrentPolicy(NewRLQPController & ctl,
+  void reloadCurrentPolicy(HRP5PRLQPController & ctl,
                            const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask);
 
   void loadPolicyByName(const std::string & policyName,
-                        NewRLQPController & ctl,
+                        HRP5PRLQPController & ctl,
                         const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask);
 
-  void loadNextPolicy(NewRLQPController & ctl,
+  void loadNextPolicy(HRP5PRLQPController & ctl,
                       const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask);
 
   bool policyLoaded() const { return policy_ && policy_->isLoaded(); }
@@ -98,7 +98,7 @@ public:
                        const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask);
 
   /** @brief Add one logger entry per configured observation/history element. Called on each policy load. */
-  void addLogObs(NewRLQPController & ctl);
+  void addLogObs(HRP5PRLQPController & ctl);
 
   Eigen::Vector3d & command() { return command_; }
   const Eigen::Vector3d & command() const { return command_; }
@@ -109,22 +109,22 @@ public:
 
 private:
   void loadPolicy(const std::string & policyName,
-                  NewRLQPController & ctl,
+                  HRP5PRLQPController & ctl,
                   const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask);
 
   void configureControl(const PolicyConfig & policy,
-                        NewRLQPController & ctl,
+                        HRP5PRLQPController & ctl,
                         const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask);
 
-  void configureAction(const PolicyConfig & policy, NewRLQPController & ctl);
+  void configureAction(const PolicyConfig & policy, HRP5PRLQPController & ctl);
   void configureNetwork(const PolicyConfig & policy);
-  void configureObservations(const PolicyConfig & policy, NewRLQPController & ctl);
+  void configureObservations(const PolicyConfig & policy, HRP5PRLQPController & ctl);
 
-  void resetObservationHistory(NewRLQPController & ctl);
-  Eigen::VectorXd computeObservation(NewRLQPController & ctl);
+  void resetObservationHistory(HRP5PRLQPController & ctl);
+  Eigen::VectorXd computeObservation(HRP5PRLQPController & ctl);
 
   void validateObservationAgainstNetwork() const;
-  ObservationContext makeObservationContext(NewRLQPController & ctl);
+  ObservationContext makeObservationContext(HRP5PRLQPController & ctl);
 
 private:
   mc_rtc::Configuration controllerConfig_;

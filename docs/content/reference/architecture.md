@@ -4,7 +4,7 @@ title: Architecture
 
 # Architecture
 
-The controller keeps mc_rtc integration and policy runtime as separate layers, connected through `NewRLQPController`.
+The controller keeps mc_rtc integration and policy runtime as separate layers, connected through `HRP5PRLQPController`.
 
 At the top level, the template contains:
 
@@ -20,10 +20,10 @@ The source tree of the base template is organized as follows:
 ```text
 new-rl-qp-controller/
 ├── etc/
-│   └── NewRLQPController.in.yaml
+│   └── HRP5PRLQPController.in.yaml
 │
 ├── include/
-│   ├── NewRLQPController.h
+│   ├── HRP5PRLQPController.h
 │   ├── api.h
 │   ├── observation/
 │   │   ├── Observation.h
@@ -36,7 +36,7 @@ new-rl-qp-controller/
 │       └── RLStateRunner.h
 │
 ├── src/
-│   ├── NewRLQPController.cpp
+│   ├── HRP5PRLQPController.cpp
 │   ├── lib.cpp
 │   ├── observation/
 │   │   ├── Observation.cpp
@@ -49,8 +49,8 @@ new-rl-qp-controller/
 │   │   └── RLStateRunner.cpp
 │   └── states/
 │       ├── CMakeLists.txt
-│       ├── NewRLQPController_Initial.cpp
-│       └── NewRLQPController_Initial.h
+│       ├── HRP5PRLQPController_Initial.cpp
+│       └── HRP5PRLQPController_Initial.h
 │
 ├── policies/
 │   ├── conventions.yaml
@@ -71,7 +71,7 @@ new-rl-qp-controller/
 The actual ownership relationships in the template are:
 
 ```text
-NewRLQPController
+HRP5PRLQPController
 │
 ├── TorqueJointTask
 │
@@ -91,13 +91,13 @@ NewRLQPController
         └── ONNX Runtime session
 ```
 
-`RLPolicyRuntime` accesses controller-owned data through `NewRLQPController` when needed (joint order, selected robot state, posture task, `TorqueJointTask`).
+`RLPolicyRuntime` accesses controller-owned data through `HRP5PRLQPController` when needed (joint order, selected robot state, posture task, `TorqueJointTask`).
 
 ## Main components
 
-### NewRLQPController
+### HRP5PRLQPController
 
-`NewRLQPController` is the mc_rtc controller implementation.
+`HRP5PRLQPController` is the mc_rtc controller implementation.
 
 In the base template it:
 
@@ -222,7 +222,7 @@ The FSM state remains responsible for deciding how the runtime output is applied
 The base template currently builds one state:
 
 ```text
-NewRLQPController_Initial
+HRP5PRLQPController_Initial
 ```
 
 Despite the historical name, it is already the RL-running state. It has the behavior previously described
@@ -234,7 +234,7 @@ The controller and the policy do not necessarily run at the same frequency.
 During an FSM cycle, the active state calls `RLStateRunner::run()`. The runtime advances its timer every controller step and only performs a new policy inference when the configured policy period has elapsed.
 
 ```text
-NewRLQPController_Initial::run()
+HRP5PRLQPController_Initial::run()
     │
     ├── RLStateRunner::run()
     │   └── RLPolicyRuntime::runPolicyStepIfNeeded()
@@ -298,7 +298,7 @@ When `action.q0` is absent, the runtime reads the controller's FSM posture task 
 
 The policy produces a position target `q_rl`. In the base template, the active state sends it to `TorqueJointTask` every cycle.
 
-If QP is bypassed (`use_QP: false`), `NewRLQPController::byPassQPControl()` computes, for each controller joint:
+If QP is bypassed (`use_QP: false`), `HRP5PRLQPController::byPassQPControl()` computes, for each controller joint:
 
 ```text
 tau_cmd = kp * (q_cmd - q) - kd * q_dot

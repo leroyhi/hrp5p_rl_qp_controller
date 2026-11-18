@@ -1,6 +1,6 @@
 #include "policy/RLPolicyRuntime.h"
 
-#include "NewRLQPController.h"
+#include "HRP5PRLQPController.h"
 
 #include <mc_rtc/logging.h>
 
@@ -17,7 +17,7 @@ RLPolicyRuntime::RLPolicyRuntime()
 }
 
 void RLPolicyRuntime::configure(const mc_rtc::Configuration & controllerConfig,
-                                NewRLQPController & ctl,
+                                HRP5PRLQPController & ctl,
                                 const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask)
 {
   controllerConfig_ = controllerConfig;
@@ -51,7 +51,7 @@ void RLPolicyRuntime::configure(const mc_rtc::Configuration & controllerConfig,
   loadPolicy(policyManager_.currentName(), ctl, torqueTask);
 }
 
-void RLPolicyRuntime::reset(NewRLQPController & ctl)
+void RLPolicyRuntime::reset(HRP5PRLQPController & ctl)
 {
   phaseElapsedTime_ = 0.0;
   phaseNormalized_ = 0.0;
@@ -60,7 +60,7 @@ void RLPolicyRuntime::reset(NewRLQPController & ctl)
   policyUpdateCount_ = 0;
 }
 
-void RLPolicyRuntime::runPolicyStepIfNeeded(NewRLQPController & ctl, double dt)
+void RLPolicyRuntime::runPolicyStepIfNeeded(HRP5PRLQPController & ctl, double dt)
 {
   if(!policyLoaded())
   {
@@ -109,14 +109,14 @@ void RLPolicyRuntime::runPolicyStepIfNeeded(NewRLQPController & ctl, double dt)
   policyTimer_ = std::fmod(policyTimer_, policyStepSize_);
 }
 
-void RLPolicyRuntime::reloadCurrentPolicy(NewRLQPController & ctl,
+void RLPolicyRuntime::reloadCurrentPolicy(HRP5PRLQPController & ctl,
                                           const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask)
 {
   loadPolicy(policyManager_.currentName(), ctl, torqueTask);
 }
 
 void RLPolicyRuntime::loadPolicyByName(const std::string & policyName,
-                                       NewRLQPController & ctl,
+                                       HRP5PRLQPController & ctl,
                                        const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask)
 {
   if(policyName == policyManager_.currentName()) { return; }
@@ -124,7 +124,7 @@ void RLPolicyRuntime::loadPolicyByName(const std::string & policyName,
   loadPolicy(policyName, ctl, torqueTask);
 }
 
-void RLPolicyRuntime::loadNextPolicy(NewRLQPController & ctl,
+void RLPolicyRuntime::loadNextPolicy(HRP5PRLQPController & ctl,
                                      const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask)
 {
   policyManager_.selectNext();
@@ -158,7 +158,7 @@ void RLPolicyRuntime::setPDGainsRatio(double ratio,
 }
 
 void RLPolicyRuntime::loadPolicy(const std::string & policyName,
-                                 NewRLQPController & ctl,
+                                 HRP5PRLQPController & ctl,
                                  const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask)
 {
   policyManager_.select(policyName);
@@ -190,7 +190,7 @@ void RLPolicyRuntime::loadPolicy(const std::string & policyName,
 }
 
 void RLPolicyRuntime::configureControl(const PolicyConfig & policy,
-                                       NewRLQPController & ctl,
+                                       HRP5PRLQPController & ctl,
                                        const std::shared_ptr<mc_tasks::TorqueJointTask> & torqueTask)
 {
   useQP_ = policy.useQP;
@@ -239,7 +239,7 @@ void RLPolicyRuntime::configureControl(const PolicyConfig & policy,
 }
 
 void RLPolicyRuntime::configureAction(const PolicyConfig & policy,
-                                      NewRLQPController & ctl)
+                                      HRP5PRLQPController & ctl)
 {
   // Resolve action.joints to controller indices.
   // This is the ONNX action vector layout/size. Do not use controlled_joints here,
@@ -349,7 +349,7 @@ void RLPolicyRuntime::configureNetwork(const PolicyConfig & policy)
 }
 
 void RLPolicyRuntime::configureObservations(const PolicyConfig & policy,
-                                            NewRLQPController & ctl)
+                                            HRP5PRLQPController & ctl)
 {
   ctl.logger().removeLogEntries(this);
   observationManager_.load(policy.observationsConfiguration, activeConvention_, observationRegistry_);
@@ -388,7 +388,7 @@ void RLPolicyRuntime::configureObservations(const PolicyConfig & policy,
                        policy.name, list);
 }
 
-void RLPolicyRuntime::resetObservationHistory(NewRLQPController & ctl)
+void RLPolicyRuntime::resetObservationHistory(HRP5PRLQPController & ctl)
 {
   if(!policyLoaded())
   {
@@ -402,7 +402,7 @@ void RLPolicyRuntime::resetObservationHistory(NewRLQPController & ctl)
   currentObservation_ = observationManager_.compute(context);
 }
 
-Eigen::VectorXd RLPolicyRuntime::computeObservation(NewRLQPController & ctl)
+Eigen::VectorXd RLPolicyRuntime::computeObservation(HRP5PRLQPController & ctl)
 {
   ObservationContext context = makeObservationContext(ctl);
   return observationManager_.compute(context);
@@ -418,7 +418,7 @@ void RLPolicyRuntime::validateObservationAgainstNetwork() const
       currentObservation_.size(), policy_->getObservationSize());
 }
 
-ObservationContext RLPolicyRuntime::makeObservationContext(NewRLQPController & ctl)
+ObservationContext RLPolicyRuntime::makeObservationContext(HRP5PRLQPController & ctl)
 {
   return ObservationContext{
     ctl.realRobot(robotName_),
@@ -434,13 +434,13 @@ ObservationContext RLPolicyRuntime::makeObservationContext(NewRLQPController & c
 }
 
 
-void RLPolicyRuntime::addLogObs(NewRLQPController & ctl)
+void RLPolicyRuntime::addLogObs(HRP5PRLQPController & ctl)
 {
   // Callbacks read the live history buffers: capturing an Entry would log a frozen copy
   const auto & entries = observationManager_.entries();
   for(size_t e = 0; e < entries.size(); ++e)
   {
-    const std::string baseName = "NewRLQPController_Observations_" + entries[e].observation->name();
+    const std::string baseName = "HRP5PRLQPController_Observations_" + entries[e].observation->name();
     const size_t size = entries[e].historyBuffer.size();
     for(size_t i = 0; i < size; ++i)
     {

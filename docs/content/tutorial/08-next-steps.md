@@ -29,12 +29,12 @@ Everything above specializes one general procedure to one specific robot and pol
 Fork the template repository and name it after the new robot, then rename all integration points consistently: controller class/files, exported constructor, state classes and export names, CMake targets, configuration file, and GUI/logger prefixes.
 
 ```bash
-sed -i -e 's/NewRLQPController/RobotNameRLQPController/g' $(find . -not -path '*/.*' -type f)
-git mv src/NewRLQPController.cpp src/RobotNameRLQPController.cpp
-git mv include/NewRLQPController.h include/RobotNameRLQPController.h
-git mv src/states/NewRLQPController_Initial.cpp src/states/RobotNameRLQPController_Initial.cpp
-git mv src/states/NewRLQPController_Initial.h src/states/RobotNameRLQPController_Initial.h
-git mv etc/NewRLQPController.in.yaml etc/RobotNameRLQPController.in.yaml
+sed -i -e 's/HRP5PRLQPController/RobotNameRLQPController/g' $(find . -not -path '*/.*' -type f)
+git mv src/HRP5PRLQPController.cpp src/RobotNameRLQPController.cpp
+git mv include/HRP5PRLQPController.h include/RobotNameRLQPController.h
+git mv src/states/HRP5PRLQPController_Initial.cpp src/states/RobotNameRLQPController_Initial.cpp
+git mv src/states/HRP5PRLQPController_Initial.h src/states/RobotNameRLQPController_Initial.h
+git mv etc/HRP5PRLQPController.in.yaml etc/RobotNameRLQPController.in.yaml
 ```
 
 You can also customize the project name in `vcpkg.json`, following the [vcpkg manifest rules](https://github.com/microsoft/vcpkg/blob/master/docs/users/manifests.md).

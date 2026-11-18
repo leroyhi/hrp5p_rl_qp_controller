@@ -15,12 +15,12 @@ Fork [`new-rl-qp-controller`](https://github.com/isri-aist/new-rl-qp-controller)
 Rename all integration points consistently: controller class/files, exported constructor, state classes and export names, CMake targets, configuration file, GUI/logger prefixes, and test selection :
 
 ```bash
-sed -i -e 's/NewRLQPController/G1RLQPController/g' $(find . -not -path '*/.*' -type f)
-git mv src/NewRLQPController.cpp src/G1RLQPController.cpp
-git mv include/NewRLQPController.h include/G1RLQPController.h
-git mv src/states/NewRLQPController_Initial.cpp src/states/G1RLQPController_Initial.cpp
-git mv src/states/NewRLQPController_Initial.h src/states/G1RLQPController_Initial.h
-git mv etc/NewRLQPController.in.yaml etc/G1RLQPController.in.yaml
+sed -i -e 's/HRP5PRLQPController/G1RLQPController/g' $(find . -not -path '*/.*' -type f)
+git mv src/HRP5PRLQPController.cpp src/G1RLQPController.cpp
+git mv include/HRP5PRLQPController.h include/G1RLQPController.h
+git mv src/states/HRP5PRLQPController_Initial.cpp src/states/G1RLQPController_Initial.cpp
+git mv src/states/HRP5PRLQPController_Initial.h src/states/G1RLQPController_Initial.h
+git mv etc/HRP5PRLQPController.in.yaml etc/G1RLQPController.in.yaml
 ```
 
 You can optionally also update the project name in `vcpkg.json`, following the [vcpkg manifest rules](https://github.com/microsoft/vcpkg/blob/master/docs/users/manifests.md). It doesn't affect the controller's runtime behavior.
